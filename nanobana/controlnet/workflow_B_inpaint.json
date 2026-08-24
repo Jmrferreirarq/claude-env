@@ -1,0 +1,112 @@
+﻿{
+    "client_id":  "agent",
+    "prompt":  {
+                   "4":  {
+                             "inputs":  {
+                                            "ckpt_name":  "RealVisXL_V5.0_fp16.safetensors"
+                                        },
+                             "class_type":  "CheckpointLoaderSimple"
+                         },
+                   "10":  {
+                              "inputs":  {
+                                             "image":  "cozinha_cn_green.png"
+                                         },
+                              "class_type":  "LoadImage"
+                          },
+                   "20":  {
+                              "inputs":  {
+                                             "channel":  "red",
+                                             "image":  "mask_person.png"
+                                         },
+                              "class_type":  "LoadImageMask"
+                          },
+                   "15":  {
+                              "inputs":  {
+                                             "grow_mask_by":  10,
+                                             "vae":  [
+                                                         "4",
+                                                         2
+                                                     ],
+                                             "mask":  [
+                                                          "20",
+                                                          0
+                                                      ],
+                                             "pixels":  [
+                                                            "10",
+                                                            0
+                                                        ]
+                                         },
+                              "class_type":  "VAEEncodeForInpaint"
+                          },
+                   "6":  {
+                             "inputs":  {
+                                            "text":  "a real photographed woman standing relaxed by the kitchen island, casual oatmeal knit sweater and light trousers, natural skin texture and hair, candid documentary photo, soft indoor daylight, full body, correct anatomy",
+                                            "clip":  [
+                                                         "4",
+                                                         1
+                                                     ]
+                                        },
+                             "class_type":  "CLIPTextEncode"
+                         },
+                   "7":  {
+                             "inputs":  {
+                                            "text":  "cartoon, cgi, plastic, doll, deformed, extra limbs, bad hands, mutated, watermark, text",
+                                            "clip":  [
+                                                         "4",
+                                                         1
+                                                     ]
+                                        },
+                             "class_type":  "CLIPTextEncode"
+                         },
+                   "3":  {
+                             "inputs":  {
+                                            "denoise":  1,
+                                            "seed":  321,
+                                            "negative":  [
+                                                             "7",
+                                                             0
+                                                         ],
+                                            "cfg":  6,
+                                            "sampler_name":  "dpmpp_2m",
+                                            "latent_image":  [
+                                                                 "15",
+                                                                 0
+                                                             ],
+                                            "positive":  [
+                                                             "6",
+                                                             0
+                                                         ],
+                                            "model":  [
+                                                          "4",
+                                                          0
+                                                      ],
+                                            "steps":  30,
+                                            "scheduler":  "karras"
+                                        },
+                             "class_type":  "KSampler"
+                         },
+                   "8":  {
+                             "inputs":  {
+                                            "samples":  [
+                                                            "3",
+                                                            0
+                                                        ],
+                                            "vae":  [
+                                                        "4",
+                                                        2
+                                                    ]
+                                        },
+                             "class_type":  "VAEDecode"
+                         },
+                   "9":  {
+                             "inputs":  {
+                                            "images":  [
+                                                           "8",
+                                                           0
+                                                       ],
+                                            "filename_prefix":  "cozinha_inpaint_person"
+                                        },
+                             "class_type":  "SaveImage"
+                         }
+               }
+}

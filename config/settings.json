@@ -1,0 +1,7 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "python \"C:/Users/JOSFER~1/.claude/statusline.py\"",
+    "padding": 0
+  }
+}

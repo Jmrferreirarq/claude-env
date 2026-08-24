@@ -1,0 +1,155 @@
+﻿{
+    "client_id":  "agent",
+    "prompt":  {
+                   "4":  {
+                             "inputs":  {
+                                            "ckpt_name":  "RealVisXL_V5.0_fp16.safetensors"
+                                        },
+                             "class_type":  "CheckpointLoaderSimple"
+                         },
+                   "10":  {
+                              "inputs":  {
+                                             "image":  "enscape_1536.png"
+                                         },
+                              "class_type":  "LoadImage"
+                          },
+                   "11":  {
+                              "inputs":  {
+                                             "ckpt_name":  "depth_anything_v2_vitl.pth",
+                                             "resolution":  1024,
+                                             "image":  [
+                                                           "10",
+                                                           0
+                                                       ]
+                                         },
+                              "class_type":  "DepthAnythingV2Preprocessor"
+                          },
+                   "12":  {
+                              "inputs":  {
+                                             "control_net_name":  "controlnet_union_sdxl_promax.safetensors"
+                                         },
+                              "class_type":  "ControlNetLoader"
+                          },
+                   "13":  {
+                              "inputs":  {
+                                             "control_net":  [
+                                                                 "12",
+                                                                 0
+                                                             ],
+                                             "type":  "depth"
+                                         },
+                              "class_type":  "SetUnionControlNetType"
+                          },
+                   "6":  {
+                             "inputs":  {
+                                            "text":  "high-end photoreal interior photograph of a contemporary kitchen-dining, rich realistic materials, soft natural daylight plus warm 2700-3000K lamps, magazine quality, full-frame 35mm, sharp, detailed, true-to-life colour",
+                                            "clip":  [
+                                                         "4",
+                                                         1
+                                                     ]
+                                        },
+                             "class_type":  "CLIPTextEncode"
+                         },
+                   "7":  {
+                             "inputs":  {
+                                            "text":  "cartoon, cgi, plastic, 3d render look, lowres, blurry, deformed, distorted, watermark, text, extra furniture",
+                                            "clip":  [
+                                                         "4",
+                                                         1
+                                                     ]
+                                        },
+                             "class_type":  "CLIPTextEncode"
+                         },
+                   "14":  {
+                              "inputs":  {
+                                             "strength":  0.7,
+                                             "image":  [
+                                                           "11",
+                                                           0
+                                                       ],
+                                             "end_percent":  1,
+                                             "negative":  [
+                                                              "7",
+                                                              0
+                                                          ],
+                                             "control_net":  [
+                                                                 "13",
+                                                                 0
+                                                             ],
+                                             "start_percent":  0,
+                                             "positive":  [
+                                                              "6",
+                                                              0
+                                                          ],
+                                             "vae":  [
+                                                         "4",
+                                                         2
+                                                     ]
+                                         },
+                              "class_type":  "ControlNetApplyAdvanced"
+                          },
+                   "15":  {
+                              "inputs":  {
+                                             "vae":  [
+                                                         "4",
+                                                         2
+                                                     ],
+                                             "pixels":  [
+                                                            "10",
+                                                            0
+                                                        ]
+                                         },
+                              "class_type":  "VAEEncode"
+                          },
+                   "3":  {
+                             "inputs":  {
+                                            "denoise":  0.5,
+                                            "seed":  12345,
+                                            "negative":  [
+                                                             "14",
+                                                             1
+                                                         ],
+                                            "cfg":  6,
+                                            "sampler_name":  "dpmpp_2m",
+                                            "latent_image":  [
+                                                                 "15",
+                                                                 0
+                                                             ],
+                                            "positive":  [
+                                                             "14",
+                                                             0
+                                                         ],
+                                            "model":  [
+                                                          "4",
+                                                          0
+                                                      ],
+                                            "steps":  28,
+                                            "scheduler":  "karras"
+                                        },
+                             "class_type":  "KSampler"
+                         },
+                   "8":  {
+                             "inputs":  {
+                                            "samples":  [
+                                                            "3",
+                                                            0
+                                                        ],
+                                            "vae":  [
+                                                        "4",
+                                                        2
+                                                    ]
+                                        },
+                             "class_type":  "VAEDecode"
+                         },
+                   "9":  {
+                             "inputs":  {
+                                            "images":  [
+                                                           "8",
+                                                           0
+                                                       ],
+                                            "filename_prefix":  "cozinha_controlnet"
+                                        },
+                             "class_type":  "SaveImage"
+                         }
+               }
+}

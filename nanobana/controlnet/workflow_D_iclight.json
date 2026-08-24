@@ -1,0 +1,161 @@
+﻿{
+    "client_id":  "agent",
+    "prompt":  {
+                   "4":  {
+                             "inputs":  {
+                                            "ckpt_name":  "RealisticVision_V6_B1.safetensors"
+                                        },
+                             "class_type":  "CheckpointLoaderSimple"
+                         },
+                   "50":  {
+                              "inputs":  {
+                                             "model_path":  "iclight_sd15_fc.safetensors",
+                                             "model":  [
+                                                           "4",
+                                                           0
+                                                       ]
+                                         },
+                              "class_type":  "LoadAndApplyICLightUnet"
+                          },
+                   "10":  {
+                              "inputs":  {
+                                             "image":  "cozinha_cn_daylight.png"
+                                         },
+                              "class_type":  "LoadImage"
+                          },
+                   "20":  {
+                              "inputs":  {
+                                             "crop":  "disabled",
+                                             "upscale_method":  "lanczos",
+                                             "width":  1024,
+                                             "height":  576,
+                                             "image":  [
+                                                           "10",
+                                                           0
+                                                       ]
+                                         },
+                              "class_type":  "ImageScale"
+                          },
+                   "15":  {
+                              "inputs":  {
+                                             "vae":  [
+                                                         "4",
+                                                         2
+                                                     ],
+                                             "pixels":  [
+                                                            "20",
+                                                            0
+                                                        ]
+                                         },
+                              "class_type":  "VAEEncode"
+                          },
+                   "6":  {
+                             "inputs":  {
+                                            "text":  "professional interior photograph, soft natural daylight filling the room from the large window, warm cozy ambient light, balanced exposure, gentle soft shadows, cinematic, photorealistic",
+                                            "clip":  [
+                                                         "4",
+                                                         1
+                                                     ]
+                                        },
+                             "class_type":  "CLIPTextEncode"
+                         },
+                   "7":  {
+                             "inputs":  {
+                                            "text":  "dark, flat, overexposed, blown highlights, blurry, lowres, deformed",
+                                            "clip":  [
+                                                         "4",
+                                                         1
+                                                     ]
+                                        },
+                             "class_type":  "CLIPTextEncode"
+                         },
+                   "60":  {
+                              "inputs":  {
+                                             "foreground":  [
+                                                                "15",
+                                                                0
+                                                            ],
+                                             "multiplier":  0.18215,
+                                             "negative":  [
+                                                              "7",
+                                                              0
+                                                          ],
+                                             "positive":  [
+                                                              "6",
+                                                              0
+                                                          ],
+                                             "vae":  [
+                                                         "4",
+                                                         2
+                                                     ]
+                                         },
+                              "class_type":  "ICLightConditioning"
+                          },
+                   "3":  {
+                             "inputs":  {
+                                            "denoise":  1,
+                                            "seed":  1001,
+                                            "negative":  [
+                                                             "60",
+                                                             1
+                                                         ],
+                                            "cfg":  2,
+                                            "sampler_name":  "dpmpp_2m",
+                                            "latent_image":  [
+                                                                 "60",
+                                                                 2
+                                                             ],
+                                            "positive":  [
+                                                             "60",
+                                                             0
+                                                         ],
+                                            "model":  [
+                                                          "50",
+                                                          0
+                                                      ],
+                                            "steps":  25,
+                                            "scheduler":  "karras"
+                                        },
+                             "class_type":  "KSampler"
+                         },
+                   "8":  {
+                             "inputs":  {
+                                            "samples":  [
+                                                            "3",
+                                                            0
+                                                        ],
+                                            "vae":  [
+                                                        "4",
+                                                        2
+                                                    ]
+                                        },
+                             "class_type":  "VAEDecode"
+                         },
+                   "70":  {
+                              "inputs":  {
+                                             "blend_factor":  1,
+                                             "source":  [
+                                                            "20",
+                                                            0
+                                                        ],
+                                             "blur_sigma":  1,
+                                             "target":  [
+                                                            "8",
+                                                            0
+                                                        ],
+                                             "mode":  "add"
+                                         },
+                              "class_type":  "DetailTransfer"
+                          },
+                   "9":  {
+                             "inputs":  {
+                                            "images":  [
+                                                           "70",
+                                                           0
+                                                       ],
+                                            "filename_prefix":  "cozinha_iclight"
+                                        },
+                             "class_type":  "SaveImage"
+                         }
+               }
+}

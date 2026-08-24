@@ -1,0 +1,1 @@
+- [FA-360 plataforma Ferreira Arquitetos](project_fa360.md) — Monorepo self-hosted (Neon + Express + React + Claude AI) a correr em http://localhost:5000
