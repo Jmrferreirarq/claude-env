@@ -26,6 +26,7 @@ done
 mkdir -p "$REPO/config"
 cp -f "$CL/settings.json" "$REPO/config/" 2>/dev/null || true
 cp -f "$CL/statusline.py" "$REPO/config/" 2>/dev/null || true
+cp -f "$CL/context_alert.py" "$REPO/config/" 2>/dev/null || true
 
 # 4. Protocolos comfy_dl (so documentos, nunca os PNGs de trabalho)
 mkdir -p "$REPO/comfy_dl"
