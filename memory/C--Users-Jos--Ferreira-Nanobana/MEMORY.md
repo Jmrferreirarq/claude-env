@@ -11,3 +11,4 @@
 - [Cozinha base = Enscape p4](cozinha-base-enscape.md) — faithful kitchen base is 06_cozinha_p4; gpt-image bar-stool view was hallucinated, abandoned
 - [Social render = 06.png](social-06-real-render.md) — 06.png is the REAL final social-zone render (blue island/glass table/oak floor/planter are genuine); 03/07/08 Zona Social.jpg are crude working renders; social glazing faces NORTH
 - [Paula Silva provenance + palette](verify-image-project-provenance.md) — Teste.PaulaSilva.jpg sat in the David Afonso folder but is the Paula Silva house; real palette = grey render + flat anthracite tile + light wood slats + black metal + exposed concrete
+- [Backup claude-env](claude-env-backup.md) — ambiente Claude com backup em github.com/Jmrferreirarq/claude-env (privado); `bash ~/claude-env/sync.sh` + `git push`; nunca misturar com o repo fa360

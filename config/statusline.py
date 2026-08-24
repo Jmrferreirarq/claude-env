@@ -61,7 +61,11 @@ def main():
     width = 10
     fill = min(width, round(pct * width))
     bar = color + '█' * fill + dim + '░' * (width - fill) + reset
-    out.write(f"{model} {dim}|{reset} {bar} {color}{fmt_k(used)}{reset}{dim}/{fmt_k(limit)} ({pct*100:.0f}%){reset}")
+    line = f"{model} {dim}|{reset} {bar} {color}{fmt_k(used)}{reset}{dim}/{fmt_k(limit)} ({pct*100:.0f}%){reset}"
+    cost = (data.get('cost') or {}).get('total_cost_usd')
+    if isinstance(cost, (int, float)) and cost > 0:
+        line += f" {dim}| ${cost:.2f}{reset}"
+    out.write(line)
 
 if __name__ == '__main__':
     try:
