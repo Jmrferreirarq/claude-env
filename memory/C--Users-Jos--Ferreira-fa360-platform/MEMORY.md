@@ -3,4 +3,4 @@
 - [User profile](user_architect.md) — Arquiteto PT, Archicad 28, projetos RJUE, comunica em portugues
 - [Tapir + ficheiros sincronizados](feedback_tapir_network_files.md) — Nunca correr Tapir sobre `.pln` em pastas sincronizadas (SMB `\\192.168.1.10\...` OU OneDrive incluindo `OneDrive\Desktop`) — crashou Archicad em 2026-05-08 (SMB) e 6× em 2026-05-19/20 (OneDrive)
 - [Tapir custom scripts](project_tapir_scripts.md) — Pasta documentada `tapir-repo/builtin-scripts/`, mas scripts série 50/60 (`54_TermoResponsabilidade`, `61_DashboardSubmissao`) vivem noutro lado não encontrado; fix de encoding UTF-8 no branch `fa-custom-scripts` (commits `0bea59e`+`d5b8064`), nunca validado in-app
-- [Ferreira Arquitetos](reference_ferreira_arquitetos.md) — Tel. escritório +351 910 662 814, servidor `\\192.168.1.10\empresa\`, pasta-cliente em `3 . Trabalhos\<Cliente>\<NumProj . Nome>\`
+- [Ferreira Arquitetos](reference_ferreira_arquitetos.md) — José Miguel Rebelo Ferreira, Arquitetos, Lda (NIPC 515561002, const. 03-07-2019), tel. +351 910 662 814, servidor `\\192.168.1.10\empresa\`, pasta-cliente em `3 . Trabalhos\<Cliente>\<NumProj . Nome>\`

@@ -15,3 +15,7 @@ PNGs) e docs do Nanobana. **Atualizar:** `bash ~/claude-env/sync.sh` (commit aut
 `git push`. Sugerir a sincronização no fim de sessões que alterem skills/memórias/protocolos.
 NÃO misturar com o repo do produto `fa360` (deploy Railway; decisão do utilizador 2026-08-24).
 `settings.local.json` fica fora por design (permissões são por máquina).
+
+**Automatizado (2026-08-24):** tarefa agendada do Windows "Claude-env Backup Semanal" corre
+`backup.cmd` (sync + push, log em `backup.log`) todas as sextas às 18h, se a sessão estiver
+iniciada. O sync manual continua disponível para fins de sessão importantes.

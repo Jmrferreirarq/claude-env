@@ -1,6 +1,7 @@
 # Memory Index
 
 - [fa360 — verificar o ecrã após escritas por API](fa360-verificar-ecra-apos-api.md) — o significado dos campos não se vê no JSON; valueCadernos=opcional, marcos=discipline "outro"
+- [fa360 — grafo graphify](fa360-graphify.md) — query no reconhecimento, --update no arranque de auditorias, código-só (nunca os PDFs), INFERRED=palpite
 
 - [fa360 — imports .ts no runner de testes](fa360-test-runner-ts-imports.md) — imports relativos em src/lib precisam de extensão .ts (Node type-stripping); typecheck pré-existentemente vermelho
 - [fa360 — fluxo de entrega/PR](fa360-pr-workflow.md) — branch → diff → validar em dev → só commit/push/PR com luz verde; nunca faço merge
