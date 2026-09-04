@@ -3,7 +3,8 @@
 
 Usage:
   python generate.py --prompt "..." [--image room.jpg ...] [--out out.png]
-                     [--model gemini-3-pro-image-preview] [--aspect 16:9] [--n 1]
+                     [--model gemini-3-pro-image] [--aspect 16:9] [--size 2K]
+                     [--n 1] [--session NAME]
 
 Setup:
   pip install google-genai pillow
@@ -12,10 +13,17 @@ Setup:
 
 Notes:
   --image can be repeated to send multiple reference images (e.g. the room + a
-  style reference). For edits, pass the previous render back as --image.
+  style reference).
+  For iterative edits prefer --session NAME (Google-recommended chat mode): the
+  conversation history is replayed on every call, so "make the sofa green" edits
+  the previous render with full context. Session state lives in
+  renders/.sessions/NAME.json next to the renders. One-off edits can still pass
+  the previous render back as --image.
 """
 import argparse
 import datetime
+import json
+import mimetypes
 import os
 import sys
 from pathlib import Path
@@ -72,12 +80,18 @@ def main():
                    help="Input image(s) to redesign/edit. Repeatable. Omit for text-to-image.")
     p.add_argument("--out", default=None,
                    help="Output PNG path. Default: auto-named in ./renders/")
-    p.add_argument("--model", default=os.environ.get("NB_MODEL", "gemini-3-pro-image-preview"),
-                   help="gemini-3-pro-image-preview (Pro) or gemini-2.5-flash-image (fast).")
+    p.add_argument("--model", default=os.environ.get("NB_MODEL", "gemini-3-pro-image"),
+                   help="gemini-3-pro-image (Nano Banana Pro, high quality) or "
+                        "gemini-3.1-flash-image (Nano Banana 2, fast).")
     p.add_argument("--aspect", default=None,
                    help="Aspect ratio e.g. 3:2, 4:5, 16:9. Default: normalize to a photographic 3:2 "
                         "(oriented to the source). Use 'match' to mirror the source's nearest ratio.")
+    p.add_argument("--size", default=None, choices=["1K", "2K", "4K"],
+                   help="Output resolution (gemini-3-pro-image only). E.g. 2K for client-facing renders.")
     p.add_argument("--n", type=int, default=1, help="Number of variations to render.")
+    p.add_argument("--session", default=None,
+                   help="Chat session name for iterative editing. Reuses conversation history from "
+                        "renders/.sessions/<NAME>.json; each call adds one turn.")
     args = p.parse_args()
 
     api_key = resolve_api_key()
@@ -129,16 +143,61 @@ def main():
         print(f"ASPECT {aspect} (matched to source)")
 
     cfg_kwargs = {"response_modalities": ["IMAGE"]}
+    img_cfg_kwargs = {}
     if aspect:
-        cfg_kwargs["image_config"] = types.ImageConfig(aspect_ratio=aspect)
+        img_cfg_kwargs["aspect_ratio"] = aspect
+    if args.size:
+        if "pro-image" not in args.model:
+            eprint(f"WARNING: --size is only supported by gemini-3-pro-image; ignoring for {args.model}.")
+        else:
+            img_cfg_kwargs["image_size"] = args.size
+    if img_cfg_kwargs:
+        cfg_kwargs["image_config"] = types.ImageConfig(**img_cfg_kwargs)
     config = types.GenerateContentConfig(**cfg_kwargs)
+
+    # Chat session (Google-recommended pattern for iterative image editing):
+    # replay prior turns as history so edits keep full conversational context.
+    session_file = None
+    session = {"model": args.model, "turns": []}
+    chat = None
+    if args.session:
+        if args.n != 1:
+            eprint("WARNING: --session implies --n 1 (one turn per call); rendering 1.")
+            args.n = 1
+        session_file = Path("renders") / ".sessions" / f"{args.session}.json"
+        if session_file.exists():
+            try:
+                session = json.loads(session_file.read_text(encoding="utf-8"))
+            except Exception as e:  # noqa: BLE001
+                eprint(f"ERROR: corrupt session file {session_file}: {e}")
+                sys.exit(2)
+        history = []
+        for turn in session["turns"]:
+            parts = [types.Part.from_text(text=turn["prompt"])]
+            for ip in turn.get("images", []):
+                if os.path.exists(ip):
+                    mime = mimetypes.guess_type(ip)[0] or "image/png"
+                    parts.append(types.Part.from_bytes(
+                        data=Path(ip).read_bytes(), mime_type=mime))
+            history.append(types.Content(role="user", parts=parts))
+            out = turn.get("output")
+            if out and os.path.exists(out):
+                history.append(types.Content(role="model", parts=[
+                    types.Part.from_bytes(data=Path(out).read_bytes(),
+                                          mime_type="image/png")]))
+        chat = client.chats.create(model=args.model, config=config, history=history)
+        if history:
+            print(f"SESSION {args.session} ({len(session['turns'])} previous turn(s))")
 
     saved = []
     for i in range(args.n):
         try:
-            resp = client.models.generate_content(
-                model=args.model, contents=contents, config=config
-            )
+            if chat is not None:
+                resp = chat.send_message(contents)
+            else:
+                resp = client.models.generate_content(
+                    model=args.model, contents=contents, config=config
+                )
         except Exception as e:  # noqa: BLE001
             eprint(f"ERROR calling model: {e}")
             sys.exit(1)
@@ -178,6 +237,16 @@ def main():
             f.write(img_bytes)
         saved.append(str(out_path))
         print(f"SAVED {out_path}")
+
+        if session_file is not None:
+            session["turns"].append({
+                "prompt": args.prompt,
+                "images": [str(Path(ip).resolve()) for ip in args.image],
+                "output": str(out_path.resolve()),
+            })
+            session_file.parent.mkdir(parents=True, exist_ok=True)
+            session_file.write_text(
+                json.dumps(session, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print("DONE " + " ".join(saved))
 
